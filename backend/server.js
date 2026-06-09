@@ -6,8 +6,11 @@ const prisma = require("./prismaClient");
 const roleMiddleware = require("./middleware/roleMiddleware");
 const restaurantRoutes = require("./routes/restaurants");
 
+console.log("Restaurants router loaded");
+
 const app = express();
 
+const reviewRoutes = require("./routes/reviews");
 const authRoutes = require("./routes/auth");
 
 
@@ -16,7 +19,7 @@ app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/restaurants", restaurantRoutes);
-
+app.use("/reviews", reviewRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Restaurant API działa" });
