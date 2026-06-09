@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         String    @default("user")
+
+  reviews      Review[]
+  favorites    Favorite[]
+
+  @@map("users")
+}
+
+model Restaurant {
+  id            Int       @id @default(autoincrement())
+  externalApiId String?   @unique @map("external_api_id")
+  name          String
+  address       String?
+  latitude      Float?
+  longitude     Float?
+
+  categoryId    Int?      @map("category_id")
+  ownerId       Int?      @map("owner_id")
+
+  category      Category? @relation(fields: [categoryId], references: [id])
+
+  reviews       Review[]
+  favorites     Favorite[]
+
+  @@map("restaurants")
+}
+
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+
+  restaurants Restaurant[]
+
+  @@map("categories")
+}
+
+model Review {
+  id            Int        @id @default(autoincrement())
+  userId        Int        @map("user_id")
+  restaurantId  Int        @map("restaurant_id")
+
+  score         Int
+  content       String?
+  isApproved    Boolean    @default(true) @map("is_approved")
+  createdAt     DateTime   @default(now()) @map("created_at")
+
+  user          User       @relation(fields: [userId], references: [id])
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@unique([userId, restaurantId])
+  @@map("reviews")
+}
+
+model Favorite {
+  userId        Int @map("user_id")
+  restaurantId  Int @map("restaurant_id")
+
+  user          User       @relation(fields: [userId], references: [id])
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@id([userId, restaurantId])
+  @@map("favorites")
+}

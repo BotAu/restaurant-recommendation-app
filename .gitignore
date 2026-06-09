@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+
+# env
+.env
+.env.local
+
+# next
+.next
+
+# logs
+npm-debug.log*
+
+# prisma generated
+generated
+
+# OS
+.DS_Store
+Thumbs.db
