@@ -10,12 +10,13 @@ const app = express();
 
 const authRoutes = require("./routes/auth");
 
+
 app.use(cors());
 app.use(express.json());
 
 app.use("/auth", authRoutes);
-
 app.use("/restaurants", restaurantRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({ message: "Restaurant API działa" });
