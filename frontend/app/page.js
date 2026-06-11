@@ -22,8 +22,10 @@ export default function LoginPage() {
     if (data.token) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      alert("Zalogowano");
-    } else {
+
+      window.location.href = "/restaurants";
+    } 
+    else {
       alert(data.message);
     }
   }

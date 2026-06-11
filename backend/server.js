@@ -9,6 +9,7 @@ const prisma = require("./prismaClient");
 const authRoutes = require("./routes/auth");
 const restaurantRoutes = require("./routes/restaurants");
 const reviewRoutes = require("./routes/reviews");
+const favoriteRoutes = require("./routes/favorites");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/restaurants", restaurantRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/favorites", favoriteRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Restaurant API działa" });

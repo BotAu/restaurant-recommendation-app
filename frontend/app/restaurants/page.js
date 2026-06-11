@@ -1,109 +1,105 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RestaurantsPage() {
   const [restaurants, setRestaurants] = useState([]);
-  const [city, setCity] = useState("Warsaw");
+  const [city, setCity] = useState("");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    fetch(
+      `http://localhost:5000/restaurants?city=${city}&search=${search}`
+    )
+      .then((res) => res.json())
+      .then((data) => setRestaurants(data))
+      .catch((err) => console.error(err));
+  }, [city, search]);
 
-  async function loadRestaurantsFromDatabase() {
-  const params = new URLSearchParams();
+  const sortedRestaurants = [...restaurants].sort((a, b) => {
+    const avgA = a.reviews?.length
+      ? a.reviews.reduce((sum, r) => sum + r.score, 0) /
+        a.reviews.length
+      : 0;
 
-  if (city) {
-    params.append("city", city);
-  }
+    const avgB = b.reviews?.length
+      ? b.reviews.reduce((sum, r) => sum + r.score, 0) /
+        b.reviews.length
+      : 0;
 
-  if (search) {
-    params.append("search", search);
-  }
-
-  const res = await fetch(`http://localhost:5000/restaurants?${params.toString()}`);
-  const data = await res.json();
-
-  setRestaurants(data);
-}
-
-  async function fetchFromApi() {
-    setLoading(true);
-
-    const res = await fetch(
-      `http://localhost:5000/restaurants/nearby/search?city=${city}`
-    );
-
-    const data = await res.json();
-
-    if (res.ok) {
-        await loadRestaurantsFromDatabase();
-    } 
-    else {
-        alert(data.message || "Błąd pobierania restauracji");
-    }
-
-    setLoading(false);
-  }
-
+    return avgB - avgA;
+  });
 
   return (
     <main className="min-h-screen p-8 bg-gray-900 text-white">
-      <h1 className="text-3xl font-bold mb-6">🍽 Restauracje</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Restauracje
+      </h1>
 
-      <div className="mb-8 grid gap-3 max-w-xl">
+      <div className="flex gap-4 mb-6">
         <input
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="Wpisz miasto, np. Krakow"
-          className="bg-gray-800 border border-gray-700 p-2 rounded"
-        />
-
-        <button
-          onClick={fetchFromApi}
-          disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded disabled:bg-gray-600"
-        >
-          {loading ? "Pobieranie..." : "Pobierz restauracje z miasta"}
-        </button>
-
-        <input
+          type="text"
+          placeholder="Szukaj restauracji..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Szukaj restauracji po nazwie..."
           className="bg-gray-800 border border-gray-700 p-2 rounded"
         />
-        <button
-            onClick={loadRestaurantsFromDatabase}
-            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded"
-            >
-            Szukaj w bazie
-        </button>
+
+        <input
+          type="text"
+          placeholder="Miasto..."
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="bg-gray-800 border border-gray-700 p-2 rounded"
+        />
       </div>
 
-      {restaurants.length === 0 ? (
-        <p className="text-gray-400">
-          Wybierz miasto i pobierz restauracje.
-        </p>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {restaurants.map((restaurant) => (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {sortedRestaurants.map((restaurant) => {
+          const averageRating = restaurant.reviews?.length
+            ? (
+                restaurant.reviews.reduce(
+                  (sum, review) => sum + review.score,
+                  0
+                ) / restaurant.reviews.length
+              ).toFixed(1)
+            : null;
+
+          return (
             <Link
               href={`/restaurants/${restaurant.id}`}
               key={restaurant.id}
               className="bg-gray-800 border border-gray-700 rounded-lg p-4 shadow hover:bg-gray-700 transition block"
             >
-              <h2 className="text-xl font-bold">{restaurant.name}</h2>
+              <h2 className="text-xl font-bold">
+                {restaurant.name}
+              </h2>
 
-              <p className="text-gray-300 mt-2">{restaurant.address}</p>
+              <p className="text-gray-300 mt-2">
+                {restaurant.address}
+              </p>
 
               <p className="mt-3 text-sm text-gray-400">
-                Liczba recenzji: {restaurant.reviews?.length || 0}
+                Liczba recenzji:{" "}
+                {restaurant.reviews?.length || 0}
+              </p>
+
+              <p
+                className={`font-semibold mt-2 ${
+                  averageRating >= 4
+                    ? "text-green-400"
+                    : averageRating >= 2.5
+                    ? "text-yellow-400"
+                    : "text-red-400"
+                }`}
+              >
+                ⭐ {averageRating || "Brak ocen"}
               </p>
             </Link>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </main>
   );
 }

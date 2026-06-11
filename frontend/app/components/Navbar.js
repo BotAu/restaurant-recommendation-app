@@ -31,6 +31,17 @@ export default function Navbar() {
         <Link href="/restaurants" className="hover:text-gray-300">
           Restauracje
         </Link>
+        {user && (
+          <Link href="/favorites" className="hover:text-gray-300">
+            Ulubione
+        </Link>
+        )}
+
+        {user?.role === "admin" && (
+          <Link href="/admin" className="hover:text-gray-300">
+            Admin
+          </Link>
+        )}
 
         {!user ? (
           <>

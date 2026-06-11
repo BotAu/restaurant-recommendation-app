@@ -2,6 +2,9 @@ const express = require("express");
 const prisma = require("../prismaClient");
 const axios = require("axios");
 
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
+
 const router = express.Router();
 
 console.log("restaurants.js loaded");
@@ -32,8 +35,15 @@ router.get("/", async (req, res) => {
         ],
       },
       include: {
-        category: true,
-        reviews: true,
+        category: true,reviews: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         name: "asc",
@@ -47,9 +57,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/nearby/search", async (req, res) => {
+router.get(
+  "/nearby/search",
+  authMiddleware,
+  roleMiddleware("admin"),
+  async (req, res) => {
   try {
-    const { city = "Warsaw" } = req.query;
+    const { city = "Warsaw", radiusKm = 5 } = req.query;
+    const radiusMeters = Number(radiusKm) * 1000;
 
     const geocodeResponse = await axios.get(
       "https://api.geoapify.com/v1/geocode/search",
@@ -77,8 +92,8 @@ router.get("/nearby/search", async (req, res) => {
       {
         params: {
           categories: "catering.restaurant",
-          filter: `circle:${lng},${lat},5000`,
-          limit: 20,
+          filter: `circle:${lng},${lat},${radiusMeters}`,
+          limit: 200,
           apiKey: process.env.GEOAPIFY_API_KEY,
         },
       }
@@ -134,7 +149,15 @@ router.get("/:id", async (req, res) => {
         id: Number(req.params.id),
       },
       include: {
-        reviews: true,
+        reviews: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
         category: true,
       },
     });
