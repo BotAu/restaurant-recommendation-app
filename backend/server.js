@@ -21,6 +21,7 @@ app.use("/restaurants", restaurantRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/favorites", favoriteRoutes);
 
+
 app.get("/", (req, res) => {
   res.json({ message: "Restaurant API działa" });
 });
@@ -30,11 +31,27 @@ app.get("/test-db", async (req, res) => {
   res.json(users);
 });
 
-app.get("/profile", authMiddleware, (req, res) => {
-  res.json({
-    message: "To jest chroniony profil",
-    user: req.user,
-  });
+app.get("/profile", authMiddleware, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.userId,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        reviews: true,
+        favorites: true,
+      },
+    });
+
+    res.json(user);
+  } catch (error) {
+    console.error("PROFILE ERROR:", error);
+    res.status(500).json({ message: "Błąd pobierania profilu" });
+  }
 });
 
 app.get("/admin/test", authMiddleware, roleMiddleware("admin"), (req, res) => {

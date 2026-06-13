@@ -21,7 +21,14 @@ export default function FavoritesPage() {
       },
     })
       .then((res) => res.json())
-      .then((data) => setFavorites(data))
+      .then((data) => {
+      if (Array.isArray(data)) {
+        setFavorites(data);
+      } else {
+        console.error("FAVORITES ERROR:", data);
+        setFavorites([]);
+      }
+})
       .catch((err) => console.error(err));
   }, []);
 

@@ -9,6 +9,11 @@ export default function RestaurantDetails({ params }) {
   const [score, setScore] = useState(5);
   const [content, setContent] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
+  const [user, setUser] = useState(null);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editScore, setEditScore] = useState(5);
+  const [editContent, setEditContent] = useState("");
+
 
   useEffect(() => {
     fetch(`http://localhost:5000/restaurants/${id}`)
@@ -27,6 +32,11 @@ export default function RestaurantDetails({ params }) {
         .then((res) => res.json())
         .then((data) => setIsFavorite(data.isFavorite))
         .catch((err) => console.error(err));
+    }
+    const savedUser = localStorage.getItem("user");
+
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
     }
   }, [id]);
 
@@ -54,10 +64,59 @@ export default function RestaurantDetails({ params }) {
     const data = await res.json();
 
     if (res.ok) {
-      alert("Recenzja dodana");
       window.location.reload();
     } else {
       alert(data.message || "Nie udało się dodać recenzji");
+    }
+  }
+
+  async function deleteReview(reviewId) {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:5000/reviews/${reviewId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    if (res.ok) {
+      window.location.reload();
+    }
+  }
+
+  function startEditing(review) {
+    setEditingReviewId(review.id);
+    setEditScore(review.score);
+    setEditContent(review.content);
+  }
+
+  async function saveEdit() {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      `http://localhost:5000/reviews/${editingReviewId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          score: editScore,
+          content: editContent,
+        }),
+      }
+    );
+
+    const data = await res.json();
+    alert(data.message);
+
+    if (res.ok) {
+      window.location.reload();
     }
   }
 
@@ -88,8 +147,6 @@ export default function RestaurantDetails({ params }) {
 
     alert(data.message);
   }
-
-  
 
   async function removeFromFavorites() {
     const token = localStorage.getItem("token");
@@ -178,11 +235,62 @@ export default function RestaurantDetails({ params }) {
             <p className="text-green-400">Ocena: {review.score}/5</p>
 
             <p>{review.content}</p>
+
+            {user && review.userId === user.id && (
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => startEditing(review)}
+                  className="bg-yellow-600 px-3 py-1 rounded"
+                >
+                  Edytuj
+                </button>
+
+                <button
+                  onClick={() => deleteReview(review.id)}
+                  className="bg-red-600 px-3 py-1 rounded"
+                >
+                  Usuń
+                </button>
+              </div>
+            )}
           </div>
         ))
       )}
 
       <div className="mt-10 bg-gray-800 p-4 rounded">
+
+        {editingReviewId && (
+  <div className="mt-6 bg-gray-800 p-4 rounded">
+    <h2 className="text-xl font-bold mb-3">Edytuj recenzję</h2>
+
+        <select
+          value={editScore}
+          onChange={(e) => setEditScore(Number(e.target.value))}
+          className="bg-gray-700 p-2 rounded mb-3 w-full"
+        >
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+          <option value={4}>4</option>
+          <option value={5}>5</option>
+        </select>
+
+        <textarea
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
+          className="bg-gray-700 p-2 rounded w-full mb-3"
+        />
+
+        <button
+          type="button"
+          onClick={saveEdit}
+          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+        >
+          Zapisz zmiany
+        </button>
+      </div>
+    )}
+
         <h2 className="text-2xl font-bold mb-4">Dodaj recenzję</h2>
 
         <select

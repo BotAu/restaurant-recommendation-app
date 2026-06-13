@@ -37,6 +37,12 @@ export default function Navbar() {
         </Link>
         )}
 
+        {user && (
+          <Link href="/profile" className="hover:text-gray-300">
+            Profil
+          </Link>
+        )}
+
         {user?.role === "admin" && (
           <Link href="/admin" className="hover:text-gray-300">
             Admin
@@ -53,6 +59,8 @@ export default function Navbar() {
               Logowanie
             </Link>
           </>
+          
+
         ) : (
           <>
             <span className="text-gray-300">
