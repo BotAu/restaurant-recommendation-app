@@ -14,6 +14,7 @@ export default function ProfilePage() {
     }
 
     fetch("http://localhost:5000/profile", {
+      credentials: "include",
       headers: {
         Authorization: `Bearer ${token}`,
       },

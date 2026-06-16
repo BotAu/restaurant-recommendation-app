@@ -14,7 +14,16 @@ export default function Navbar() {
     }
   }, []);
 
-  function logout() {
+  async function logout() {
+    try {
+      await fetch("http://localhost:5000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("LOGOUT ERROR:", error);
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);

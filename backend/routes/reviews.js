@@ -4,9 +4,34 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+function validateReviewInput(restaurantId, score, content) {
+  if (restaurantId !== undefined && (typeof restaurantId !== "number" || restaurantId <= 0)) {
+    return "Nieprawidłowy identyfikator restauracji.";
+  }
+
+  if (typeof score !== "number" || score < 1 || score > 5) {
+    return "Ocena musi być w zakresie od 1 do 5.";
+  }
+
+  if (content != null && typeof content !== "string") {
+    return "Treść recenzji musi być tekstem.";
+  }
+
+  if (typeof content === "string" && content.length > 500) {
+    return "Treść recenzji nie może przekraczać 500 znaków.";
+  }
+
+  return null;
+}
+
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { restaurantId, score, content } = req.body;
+    const validationError = validateReviewInput(restaurantId, score, content);
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
 
     const review = await prisma.review.create({
       data: {
@@ -30,6 +55,11 @@ router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const { score, content } = req.body;
     const reviewId = Number(req.params.id);
+    const validationError = validateReviewInput(undefined, score, content);
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
 
     const review = await prisma.review.findUnique({
       where: { id: reviewId },

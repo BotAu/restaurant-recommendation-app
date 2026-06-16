@@ -11,6 +11,7 @@ export default function LoginPage() {
 
     const res = await fetch("http://localhost:5000/auth/login", {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -19,14 +20,11 @@ export default function LoginPage() {
 
     const data = await res.json();
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+    if (res.ok && data.user) {
       localStorage.setItem("user", JSON.stringify(data.user));
-
       window.location.href = "/restaurants";
-    } 
-    else {
-      alert(data.message);
+    } else {
+      alert(data.message || "Nie udało się zalogować");
     }
   }
 

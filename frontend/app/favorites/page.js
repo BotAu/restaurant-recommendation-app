@@ -15,10 +15,14 @@ export default function FavoritesPage() {
       return;
     }
 
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     fetch("http://localhost:5000/favorites", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
+      headers,
     })
       .then((res) => res.json())
       .then((data) => {
@@ -35,13 +39,17 @@ export default function FavoritesPage() {
     async function removeFavorite(restaurantId) {
     const token = localStorage.getItem("token");
 
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch(
         `http://localhost:5000/favorites/${restaurantId}`,
         {
         method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
+        headers,
         }
     );
 

@@ -20,12 +20,16 @@ export default function AdminPage() {
     setLoading(true);
     setMessage("");
 
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch(
       `http://localhost:5000/restaurants/nearby/search?city=${city}&radiusKm=${radiusKm}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
+        headers,
       }
     );
 
