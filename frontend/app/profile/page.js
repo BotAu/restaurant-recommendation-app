@@ -59,6 +59,43 @@ export default function ProfilePage() {
           {profile.favorites?.length || 0}
         </p>
       </div>
+
+      <div className="mt-8 max-w-3xl">
+        <h2 className="text-2xl font-semibold mb-4">Twoje oceny</h2>
+
+        {profile.reviews?.length > 0 ? (
+          <div className="space-y-4">
+            {profile.reviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-gray-800 border border-gray-700 rounded-lg p-5"
+              >
+                <p className="text-sm text-gray-400">Restauracja:</p>
+                <p className="text-lg font-semibold">
+                  {review.restaurant?.name || "Nieznana restauracja"}
+                </p>
+
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <p>
+                    <span className="text-gray-400">Ocena:</span> {review.score}/5
+                  </p>
+                  <p>
+                    <span className="text-gray-400">Data:</span>{" "}
+                    {new Date(review.createdAt).toLocaleDateString("pl-PL")}
+                  </p>
+                </div>
+
+                <p className="mt-3 text-gray-200">
+                  <span className="text-gray-400">Komentarz:</span>{" "}
+                  {review.content || "Brak komentarza"}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400">Jeszcze nie dodałeś żadnej oceny.</p>
+        )}
+      </div>
     </main>
   );
 }

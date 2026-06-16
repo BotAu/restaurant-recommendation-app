@@ -42,7 +42,22 @@ app.get("/profile", authMiddleware, async (req, res) => {
         username: true,
         email: true,
         role: true,
-        reviews: true,
+        reviews: {
+          select: {
+            id: true,
+            score: true,
+            content: true,
+            createdAt: true,
+            restaurant: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         favorites: true,
       },
     });
