@@ -55,7 +55,9 @@ export default function LoginPage() {
         <button className="bg-black text-white p-2 rounded">
           Zaloguj
         </button>
-        Login:Admin1@test.pl Hasło:Admin13
+        <h3 className="text-lg font-semibold">Dane logowania:</h3>
+        <p>Admin1@test.pl</p>
+        <p>Admin13</p>
       </form>
     </main>
   );
