@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/lib/api";
 
 export default function RestaurantDetails({ params }) {
-  const { id } = use(params);
+  const { id } = params;
 
   const [restaurant, setRestaurant] = useState(null);
   const [score, setScore] = useState(5);
