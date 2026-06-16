@@ -35,19 +35,35 @@ const reviewLimiter = rateLimit({
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(cookieParser());
+
 const allowedOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
-  process.env.CLIENT_URL || "https://restaurant-recommendation-app-chi.vercel.app",
+  process.env.CLIENT_URL || "https://restaurant-recommendation-app-five.vercel.app",
   "https://restaurant-recommendation-app-2.vercel.app",
   "https://restaurant-recommendation-app-five.vercel.app",
+  "https://restaurant-recommendation-jeu8wrkix-botaus-projects.vercel.app",
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.use("/auth", authLimiter, authRoutes);
