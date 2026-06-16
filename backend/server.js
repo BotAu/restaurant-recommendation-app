@@ -35,8 +35,14 @@ const reviewLimiter = rateLimit({
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(cookieParser());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  process.env.CLIENT_URL || "https://restaurant-recommendation-app-chi.vercel.app",
+];
+
 app.use(cors({
-  origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PATCH", "DELETE"],
   credentials: true,
 }));
