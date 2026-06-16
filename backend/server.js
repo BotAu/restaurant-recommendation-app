@@ -40,6 +40,7 @@ const allowedOrigins = [
   "http://127.0.0.1:3000",
   process.env.CLIENT_URL || "https://restaurant-recommendation-app-chi.vercel.app",
   "https://restaurant-recommendation-app-2.vercel.app",
+  "https://restaurant-recommendation-app-five.vercel.app",
 ];
 
 app.use(cors({
