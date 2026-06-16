@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
@@ -20,7 +21,7 @@ export default function FavoritesPage() {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    fetch("http://localhost:5000/favorites", {
+    fetch(`${API_BASE_URL}/favorites`, {
       credentials: "include",
       headers,
     })
@@ -45,7 +46,7 @@ export default function FavoritesPage() {
     }
 
     const res = await fetch(
-        `http://localhost:5000/favorites/${restaurantId}`,
+        `${API_BASE_URL}/favorites/${restaurantId}`,
         {
         method: "DELETE",
         credentials: "include",

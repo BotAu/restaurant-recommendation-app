@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -16,7 +17,7 @@ export default function Navbar() {
 
   async function logout() {
     try {
-      await fetch("http://localhost:5000/auth/logout", {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

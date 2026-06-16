@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function AdminPage() {
   const [city, setCity] = useState("Warsaw");
@@ -26,7 +27,7 @@ export default function AdminPage() {
     }
 
     const res = await fetch(
-      `http://localhost:5000/restaurants/nearby/search?city=${city}&radiusKm=${radiusKm}`,
+      `${API_BASE_URL}/restaurants/nearby/search?city=${city}&radiusKm=${radiusKm}`,
       {
         credentials: "include",
         headers,

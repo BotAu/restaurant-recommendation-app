@@ -15,7 +15,7 @@ function App() {
     try {
       const currentOffset = reset ? 0 : offset;
       const res = await fetch(
-        `http://localhost:5000/restaurants?lat=${lat}&lon=${lon}&radius=${radius}&limit=${limit}&offset=${currentOffset}`
+        `${API_BASE_URL}/restaurants?lat=${lat}&lon=${lon}&radius=${radius}&limit=${limit}&offset=${currentOffset}`
       );
       const data = await res.json();
 

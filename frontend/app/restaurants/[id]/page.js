@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function RestaurantDetails({ params }) {
   const { id } = use(params);
@@ -16,7 +17,7 @@ export default function RestaurantDetails({ params }) {
 
 
   useEffect(() => {
-    fetch(`http://localhost:5000/restaurants/${id}`)
+    fetch(`${API_BASE_URL}/restaurants/${id}`)
       .then((res) => res.json())
       .then((data) => setRestaurant(data))
       .catch((err) => console.error(err));
@@ -28,7 +29,7 @@ export default function RestaurantDetails({ params }) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    fetch(`http://localhost:5000/favorites/check/${id}`, {
+    fetch(`${API_BASE_URL}/favorites/check/${id}`, {
       credentials: "include",
       headers,
     })
@@ -58,7 +59,7 @@ export default function RestaurantDetails({ params }) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch("http://localhost:5000/reviews", {
+    const res = await fetch(`${API_BASE_URL}/reviews`, {
       method: "POST",
       credentials: "include",
       headers,
@@ -86,7 +87,7 @@ export default function RestaurantDetails({ params }) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch(`http://localhost:5000/reviews/${reviewId}`, {
+    const res = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
       method: "DELETE",
       credentials: "include",
       headers,
@@ -117,7 +118,7 @@ export default function RestaurantDetails({ params }) {
     }
 
     const res = await fetch(
-      `http://localhost:5000/reviews/${editingReviewId}`,
+      `${API_BASE_URL}/reviews/${editingReviewId}`,
       {
         method: "PATCH",
         credentials: "include",
@@ -152,7 +153,7 @@ export default function RestaurantDetails({ params }) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch("http://localhost:5000/favorites", {
+    const res = await fetch(`${API_BASE_URL}/favorites`, {
       method: "POST",
       credentials: "include",
       headers,
@@ -183,7 +184,7 @@ export default function RestaurantDetails({ params }) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch(`http://localhost:5000/favorites/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/favorites/${id}`, {
       method: "DELETE",
       credentials: "include",
       headers,

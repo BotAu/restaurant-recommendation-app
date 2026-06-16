@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -13,7 +14,7 @@ export default function ProfilePage() {
       return;
     }
 
-    fetch("http://localhost:5000/profile", {
+    fetch(`${API_BASE_URL}/profile`, {
       credentials: "include",
       headers: {
         Authorization: `Bearer ${token}`,
