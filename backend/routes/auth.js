@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const prisma = require("../prismaClient");
 
 const router = express.Router();
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 router.post("/register", async (req, res) => {
   try {
@@ -11,6 +12,14 @@ router.post("/register", async (req, res) => {
 
     if (!username || !email || !password) {
       return res.status(400).json({ message: "Brakuje danych" });
+    }
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Nieprawidłowy adres email" });
+    }
+
+    if (typeof password !== "string" || password.length < 8) {
+      return res.status(400).json({ message: "Hasło musi mieć co najmniej 8 znaków" });
     }
 
     const existingUser = await prisma.user.findFirst({
@@ -52,6 +61,10 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: "Brakuje danych logowania" });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -76,6 +89,13 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000,
+    });
+
     res.json({
       message: "Zalogowano",
       token,
@@ -90,6 +110,15 @@ router.post("/login", async (req, res) => {
     console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Błąd serwera" });
   }
+});
+
+router.post("/logout", async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+  res.json({ message: "Wylogowano" });
 });
 
 module.exports = router;

@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const authMiddleware = require("./middleware/authMiddleware");
@@ -13,12 +16,35 @@ const favoriteRoutes = require("./routes/favorites");
 
 const app = express();
 
-app.use(cors());
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Zbyt wiele prób. Spróbuj ponownie później." },
+});
+
+const reviewLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Za dużo żądań. Spróbuj później." },
+});
+
+app.disable("x-powered-by");
+app.use(helmet());
+app.use(cookieParser());
+app.use(cors({
+  origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  credentials: true,
+}));
 app.use(express.json());
 
-app.use("/auth", authRoutes);
+app.use("/auth", authLimiter, authRoutes);
 app.use("/restaurants", restaurantRoutes);
-app.use("/reviews", reviewRoutes);
+app.use("/reviews", reviewLimiter, reviewRoutes);
 app.use("/favorites", favoriteRoutes);
 
 
@@ -42,7 +68,22 @@ app.get("/profile", authMiddleware, async (req, res) => {
         username: true,
         email: true,
         role: true,
-        reviews: true,
+        reviews: {
+          select: {
+            id: true,
+            score: true,
+            content: true,
+            createdAt: true,
+            restaurant: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         favorites: true,
       },
     });
@@ -57,6 +98,11 @@ app.get("/profile", authMiddleware, async (req, res) => {
 app.get("/admin/test", authMiddleware, roleMiddleware("admin"), (req, res) => {
   res.json({ message: "Panel admina działa" });
 });
+
+if (!process.env.JWT_SECRET) {
+  console.error("Błąd: brak JWT_SECRET w zmiennych środowiskowych.");
+  process.exit(1);
+}
 
 const PORT = process.env.PORT || 5000;
 

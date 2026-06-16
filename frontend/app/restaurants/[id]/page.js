@@ -23,16 +23,19 @@ export default function RestaurantDetails({ params }) {
 
     const token = localStorage.getItem("token");
 
+    const headers = {};
     if (token) {
-      fetch(`http://localhost:5000/favorites/check/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => setIsFavorite(data.isFavorite))
-        .catch((err) => console.error(err));
+      headers.Authorization = `Bearer ${token}`;
     }
+
+    fetch(`http://localhost:5000/favorites/check/${id}`, {
+      credentials: "include",
+      headers,
+    })
+      .then((res) => res.json())
+      .then((data) => setIsFavorite(data.isFavorite))
+      .catch((err) => console.error(err));
+
     const savedUser = localStorage.getItem("user");
 
     if (savedUser) {
@@ -48,12 +51,17 @@ export default function RestaurantDetails({ params }) {
       return;
     }
 
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch("http://localhost:5000/reviews", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
+      headers,
       body: JSON.stringify({
         restaurantId: Number(id),
         score,
@@ -73,11 +81,15 @@ export default function RestaurantDetails({ params }) {
   async function deleteReview(reviewId) {
     const token = localStorage.getItem("token");
 
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch(`http://localhost:5000/reviews/${reviewId}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
+      headers,
     });
 
     const data = await res.json();
@@ -97,14 +109,19 @@ export default function RestaurantDetails({ params }) {
   async function saveEdit() {
     const token = localStorage.getItem("token");
 
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch(
       `http://localhost:5000/reviews/${editingReviewId}`,
       {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
+        headers,
         body: JSON.stringify({
           score: editScore,
           content: editContent,
@@ -128,12 +145,17 @@ export default function RestaurantDetails({ params }) {
       return;
     }
 
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch("http://localhost:5000/favorites", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
+      headers,
       body: JSON.stringify({
         restaurantId: Number(id),
       }),
@@ -156,11 +178,15 @@ export default function RestaurantDetails({ params }) {
       return;
     }
 
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const res = await fetch(`http://localhost:5000/favorites/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
+      headers,
     });
 
     const data = await res.json();
