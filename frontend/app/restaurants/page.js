@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function RestaurantsPage() {
   const [restaurants, setRestaurants] = useState([]);
@@ -10,7 +11,7 @@ export default function RestaurantsPage() {
 
   useEffect(() => {
     fetch(
-      `http://localhost:5000/restaurants?city=${city}&search=${search}`
+      `${API_BASE_URL}/restaurants?city=${city}&search=${search}`
     )
       .then((res) => res.json())
       .then((data) => setRestaurants(data))
