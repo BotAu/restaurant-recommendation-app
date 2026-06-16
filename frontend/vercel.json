@@ -6,4 +6,8 @@
       "use": "@vercel/next"
     }
   ]
+
+  ,"env": {
+    "NEXT_PUBLIC_API_URL": "https://restaurant-recommendation-app-o5o1.onrender.com"
+  }
 }
