@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
 import { API_BASE_URL } from "@/lib/api";
 
 export default function RestaurantDetails({ params }) {
-  const { id } = params;
+  const params = useParams();
+  const id = params.id;
 
   const [restaurant, setRestaurant] = useState(null);
   const [score, setScore] = useState(5);
@@ -17,6 +20,9 @@ export default function RestaurantDetails({ params }) {
 
 
   useEffect(() => {
+  if (!id){
+     return;
+  }
     fetch(`${API_BASE_URL}/restaurants/${id}`)
       .then((res) => res.json())
       .then((data) => setRestaurant(data))
