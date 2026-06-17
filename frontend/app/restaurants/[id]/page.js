@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 
 import { API_BASE_URL } from "@/lib/api";
 
-export default function RestaurantDetails({ params }) {
+export default function RestaurantDetails() {
   const params = useParams();
   const id = params.id;
 
@@ -34,7 +34,7 @@ export default function RestaurantDetails({ params }) {
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
-
+    if(token){
     fetch(`${API_BASE_URL}/favorites/check/${id}`, {
       credentials: "include",
       headers,
@@ -42,7 +42,7 @@ export default function RestaurantDetails({ params }) {
       .then((res) => res.json())
       .then((data) => setIsFavorite(data.isFavorite))
       .catch((err) => console.error(err));
-
+    }
     const savedUser = localStorage.getItem("user");
 
     if (savedUser) {
